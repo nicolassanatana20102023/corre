@@ -1,12 +1,10 @@
-  
 var towerImg, tower;
 var doorImg, door, doorsGroup;
 var climberImg, climber, climbersGroup;
 var ghost, ghostImg;
 var invisibleBlockGroup, invisibleBlock;
 var gameState = "play"
-
-
+     
 function preload(){
   towerImg = loadImage("tower.png");
   doorImg = loadImage("door.png");
@@ -15,7 +13,7 @@ function preload(){
   spookySound = loadSound("spooky.wav");
 }
 
-function setup() {
+function setup(){
   createCanvas(600,600);
   spookySound.loop();
   tower = createSprite(300,300);
@@ -31,86 +29,86 @@ function setup() {
   ghost.addImage("ghost", ghostImg);
 }
 
-
-function draw() {
-  background(255);
-  if(tower.y > 400){
-    tower.y = 300;
-  }
-
-
-
+function draw(){
+  background(0);
   if (gameState === "play") {
-    
-    if(keyDown("left_Arrow")){
-  
-   ghost.x=ghost.x-3;
-
-      //escribir aquí el código para mover el fantasma a la izquierda al presionar la flecha izquierda
+    if(keyDown("left_arrow")){
+      ghost.x = ghost.x - 3;
     }
-    if(keyDown("right_Arrow")){
-  
-      ghost.x=ghost.x+3;
     
-      //escribir aquí el código para mover el fantasma a la derecha al presionar la flecha derecha
-      
+    if(keyDown("right_arrow")){
+      ghost.x = ghost.x + 3;
     }
+    
     if(keyDown("space")){
-  
-      ghost.velocityY= -10
-
-      //escribir aquí el código para mover el fantasma hacia arriba al presionar la flecha hacia arriba
-      
+      ghost.velocityY = -10;
     }
-  
-  ghost.velocityY = ghost.velocityY + 0.8;
-  
-   
-      //escribir una condición para desplazar infinitamente la torre
     
-      spawnDoors();
+    ghost.velocityY = ghost.velocityY + 0.8
+    
+    if(tower.y > 400){
+      tower.y = 300
+    }
+    spawnDoors();
 
+    
+    //climbersGroup.collide(ghost);
+    if(climbersGroup.isTouching(ghost)){
+      ghost.velocityY = 0;
+    }
+    if(invisibleBlockGroup.isTouching(ghost) || ghost.y > 600){
+      ghost.destroy();
+      gameState = "end"
+    }
+    
+    drawSprites();
+  }
   
-      //escribir el código para hacer que climbersGroup colisione con el fantasma y cambiar la velocidad del fantasma  
-//escribir aquí el código para hacer que invisibleBlockGroup colisione con el fantasma, destruir el fantasma y cambiar gamestate a end.
-  
-  drawSprites();
-}
   if (gameState === "end"){
     stroke("yellow");
     fill("yellow");
     textSize(30);
-    text("Fin del juego", 230,250)
+    text("Game Over", 230,250)
   }
+
 }
 
-function spawnDoors()
- {
-  //escribir aquí el código para aparecer los obstáculos
+function spawnDoors() {
+  //escribir código aquí para aparecer puertas en la torre.
   if (frameCount % 240 === 0) {
     var door = createSprite(200, -50);
     var climber = createSprite(200,10);
     var invisibleBlock = createSprite(200,15);
     invisibleBlock.width = climber.width;
     invisibleBlock.height = 2;
-    //agregar la función random
-    //
+    
+    door.x = Math.round(random(120,400));
+    climber.x = door.x;
+    invisibleBlock.x = door.x;
+    
     door.addImage(doorImg);
     climber.addImage(climberImg);
     
     door.velocityY = 1;
     climber.velocityY = 1;
     invisibleBlock.velocityY = 1;
-
-    //cambiar la profundidad del fantasma y de la puerta
     
-     
+    ghost.depth = door.depth;
+    ghost.depth +=1;
+   
+    //asignar tiempo de vida a la variable
+    door.lifetime = 800;
+    climber.lifetime = 800;
+    invisibleBlock.lifetime = 800;
 
     
-    //asignar lifetime a obstacle.lifetime = 300; aquí los obstáculos son la puerta, la barandilla y el bloque invisible
-
-
-    //agregar cada obstáculo al grupo obstaclesGroup.add(obstacle);aquí los obstáculos son la puerta, la barandilla y el bloque invisible
+    //agregar cada puerta al grupo.
+    doorsGroup.add(door);
+    invisibleBlock.debug = true;
+    climbersGroup.add(climber);
+    invisibleBlockGroup.add(invisibleBlock);
   }
 }
+
+
 
